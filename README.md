@@ -1,0 +1,25 @@
+# Video Transcoder API
+
+Stack: FastAPI, SQLAlchemy, SQLite, FFmpeg, Docker. Monolithic. REST-first.
+
+## Run locally
+docker build -t videoapi:v1 .
+docker run --rm -p 8000:8000 -e JWT_SECRET=dev -v $(pwd)/data:/data videoapi:v1
+Open http://localhost:8000/ui
+
+## REST
+POST /api/v1/auth/login  -> {username,password} -> JWT
+POST /api/v1/media/upload (multipart file) -> {video_id}
+GET  /api/v1/media?owner=&page=&per_page=&sort=
+POST /api/v1/transcode -> {video_id} -> JobResp
+GET  /api/v1/jobs/{job_id}
+
+## Users
+admin/admin123 (admin), riya/riya123 (user)
+
+## Deploy
+Image pushed to ECR. EC2 t3.micro runs container via user-data. Port 80 open.
+
+## Load test
+Edit load_test.py with API, VIDEO_ID. Run. Expect >80% CPU for ≥5 min.
+

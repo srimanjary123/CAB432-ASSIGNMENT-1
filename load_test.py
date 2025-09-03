@@ -1,0 +1,32 @@
+import asyncio, httpx, time, argparse
+
+API="http://<ec2-public-ip>"
+USER="riya"; PASS="riya123"
+VIDEO_ID="<paste-from-upload>"
+CONCURRENCY=4
+DURATION=300  # seconds
+
+async def login(client):
+    r=await client.post(f"{API}/api/v1/auth/login", json={"username":USER,"password":PASS})
+    r.raise_for_status(); return r.json()["access_token"]
+
+async def worker(token, idx, end_time):
+    headers={"Authorization":f"Bearer {token}"}
+    count=0
+    while time.time()<end_time:
+        r=await client.post(f"{API}/api/v1/transcode", json={"video_id":VIDEO_ID}, headers=headers, timeout=None)
+        if r.status_code==200: count+=1
+    return idx, count
+
+async def main():
+    async with httpx.AsyncClient(timeout=None) as c:
+        global client; client=c
+        token=await login(c)
+        end=time.time()+DURATION
+        tasks=[worker(token,i,end) for i in range(CONCURRENCY)]
+        res=await asyncio.gather(*tasks, return_exceptions=True)
+        print(res)
+
+if __name__=="__main__":
+    asyncio.run(main())
+

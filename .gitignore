@@ -1,0 +1,17 @@
+﻿# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# SQLite
+app.db
+
+# Local data
+data/
+# Docker bind mount path on host
+/data/
+
+# OS/IDE
+.DS_Store
+.vscode/
