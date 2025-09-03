@@ -15,11 +15,12 @@ POST /api/v1/transcode -> {video_id} -> JobResp
 GET  /api/v1/jobs/{job_id}
 
 ## Users
-admin/admin123 (admin), riya/riya123 (user)
+admin/admin123 (admin), srimanjary/srimanjary123 (user)
 
 ## Deploy
 Image pushed to ECR. EC2 t3.micro runs container via user-data. Port 80 open.
 
 ## Load test
 Edit load_test.py with API, VIDEO_ID. Run. Expect >80% CPU for ≥5 min.
+
 
