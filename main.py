@@ -9,6 +9,9 @@ from models import init_db, SessionLocal, Video, Job
 from auth import verify_login, create_token, require_auth, require_admin
 from schemas import LoginReq, LoginResp, UploadResp, JobReq, JobResp, VideoOut
 from ffmpeg_utils import ensure_dirs, transcode
+from fastapi import FastAPI, Depends
+from pydantic import BaseModel
+from auth import create_token, verify_login, require_auth, require_admin
 
 APP_NAME = "Video Transcoder API"
 app = FastAPI(title=APP_NAME, version="1.0.0")
@@ -119,3 +122,22 @@ def get_job(job_id: str, user=Depends(require_auth)):
     finally:
         db.close()
 
+app = FastAPI(title="Video Transcoder API", openapi_url="/openapi.json")
+
+class LoginIn(BaseModel):
+    username: str
+    password: str
+
+@app.post("/api/v1/auth/login")
+def login(body: LoginIn):
+    user = verify_login(body.username, body.password)
+    token = create_token(user["username"], user["role"])
+    return {"access_token": token, "token_type": "bearer", "role": user["role"]}
+
+@app.get("/api/v1/users/me")
+def me(user: dict = Depends(require_auth)):
+    return user
+
+@app.get("/api/v1/admin/metrics")
+def admin_metrics(_=Depends(require_admin)):
+    return {"status": "ok", "scope": "admin"}
