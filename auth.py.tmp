@@ -8,7 +8,7 @@ JWT_ALG = "HS256"
 # username -> {password, role}
 USERS = {
     "admin": {"password": "admin123", "role": "admin"},
-    "riya":  {"password": "riya123",  "role": "user"},
+    "srimanjary":  {"password": "srimanjary123",  "role": "user"},
 }
 
 security = HTTPBearer()
@@ -36,3 +36,4 @@ def verify_login(username: str, password: str):
     if not u or u["password"] != password:
         raise HTTPException(status_code=401, detail="Bad credentials")
     return {"username": username, "role": u["role"]}
+
